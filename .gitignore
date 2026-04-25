@@ -1,0 +1,21 @@
+# macOS
+.DS_Store
+
+# IDEs
+.idea/
+.vscode/
+*.iws
+*.iml
+*.ipr
+
+# Build directories
+target/
+build/
+**/target/
+**/build/
+
+# Logs
+*.log
+
+# Environment variables
+.env
