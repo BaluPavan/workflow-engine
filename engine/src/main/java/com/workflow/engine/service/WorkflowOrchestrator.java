@@ -21,9 +21,22 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
+import io.micrometer.core.instrument.MeterRegistry;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.util.Comparator;
+import java.util.List;
+import java.util.UUID;
+
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class WorkflowOrchestrator {
 
     private final WorkflowDefinitionRepository workflowDefinitionRepository;
@@ -32,6 +45,24 @@ public class WorkflowOrchestrator {
     private final WorkflowStepInstanceRepository workflowStepInstanceRepository;
     private final OutboxService outboxService;
     private final WorkflowProperties workflowProperties;
+    private final MeterRegistry meterRegistry;
+
+    @Autowired
+    public WorkflowOrchestrator(WorkflowDefinitionRepository workflowDefinitionRepository,
+                                WorkflowStepConfigRepository workflowStepConfigRepository,
+                                WorkflowInstanceRepository workflowInstanceRepository,
+                                WorkflowStepInstanceRepository workflowStepInstanceRepository,
+                                OutboxService outboxService,
+                                WorkflowProperties workflowProperties,
+                                @Autowired(required = false) MeterRegistry meterRegistry) {
+        this.workflowDefinitionRepository = workflowDefinitionRepository;
+        this.workflowStepConfigRepository = workflowStepConfigRepository;
+        this.workflowInstanceRepository = workflowInstanceRepository;
+        this.workflowStepInstanceRepository = workflowStepInstanceRepository;
+        this.outboxService = outboxService;
+        this.workflowProperties = workflowProperties;
+        this.meterRegistry = meterRegistry;
+    }
 
     @Transactional
     public WorkflowInstance startWorkflow(String workflowName, String context) {
@@ -60,6 +91,7 @@ public class WorkflowOrchestrator {
             workflowStepInstanceRepository.save(stepInstance);
         }
 
+        incrementCounter("workflow.instances.started");
         dispatchStep(instance, stepConfigs.get(0));
         return instance;
     }
@@ -144,6 +176,7 @@ public class WorkflowOrchestrator {
             instance.setCompletedAt(LocalDateTime.now());
             instance.setCurrentStep(null);
             workflowInstanceRepository.save(instance);
+            incrementCounter("workflow.instances.completed");
             log.info("Workflow instance {} completed", instance.getId());
             return;
         }
@@ -190,7 +223,14 @@ public class WorkflowOrchestrator {
         instance.setStatus(WorkflowStatus.FAILED);
         instance.setFailedAt(LocalDateTime.now());
         workflowInstanceRepository.save(instance);
+        incrementCounter("workflow.instances.failed");
         log.warn("Critical step {} exhausted retries for workflow {}", stepConfig.getStepName(), instance.getId());
+    }
+
+    private void incrementCounter(String metricName) {
+        if (meterRegistry != null) {
+            meterRegistry.counter(metricName).increment();
+        }
     }
 
     private void dispatchStep(WorkflowInstance instance, WorkflowStepConfig stepConfig) {

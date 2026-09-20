@@ -24,7 +24,19 @@ public class OutboxDispatcher {
     @Scheduled(fixedDelayString = "${workflow.outbox.fixed-delay-ms:1000}")
     public void dispatchPendingEvents() {
         outboxEventRepository.findTop50ByPublishedAtIsNullOrderByCreatedAtAsc()
-                .forEach(event -> dispatch(event.getId()));
+                .forEach(this::dispatchAsync);
+    }
+
+    public void dispatchAsync(OutboxEvent event) {
+        if (event == null || event.getPublishedAt() != null) {
+            return;
+        }
+        taskPublisher.publishAsync(event)
+                .thenAccept(result -> markPublished(event.getId()))
+                .exceptionally(ex -> {
+                    log.warn("Outbox event {} delivery deferred: {}", event.getId(), ex.getMessage());
+                    return null;
+                });
     }
 
     public void dispatch(UUID eventId) {
@@ -34,10 +46,18 @@ public class OutboxDispatcher {
         }
         try {
             taskPublisher.publish(event);
-            event.setPublishedAt(LocalDateTime.now());
-            outboxEventRepository.save(event);
+            markPublished(eventId);
         } catch (RuntimeException exception) {
             log.warn("Outbox event {} could not be delivered and will be retried", eventId, exception);
         }
+    }
+
+    private void markPublished(UUID eventId) {
+        outboxEventRepository.findById(eventId).ifPresent(event -> {
+            if (event.getPublishedAt() == null) {
+                event.setPublishedAt(LocalDateTime.now());
+                outboxEventRepository.save(event);
+            }
+        });
     }
 }

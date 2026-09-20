@@ -425,18 +425,19 @@ All services run locally for development. The engine and worker are separate Spr
 
 ---
 
-## Future Improvements
+## Production Hardening Features
 
-Production-grade enhancements not in scope for the MVP:
+The system includes production-grade reliability enhancements:
 
-1. **Dead letter queue** — handle poison messages
-2. **Saga compensation** — rollback on failure (e.g. refund payment)
-3. **Branching / parallel steps** — DAG-based workflows
-4. **Human approval** — `PAUSED` status with resume API
-5. **OpenTelemetry tracing** — end-to-end request tracing
-6. **Prometheus metrics** — step duration, retry rate, failure rate
-7. **Auth and multi-tenancy** — isolate workflows per tenant
-8. **Schema registry** — Avro/Protobuf for Kafka messages
-9. **Dedicated timer infrastructure** — replace polling scheduler
+1. **Dead Letter Queue (DLQ) & Re-drive API** — Routes poison or unprocessable task results to a `dlq_task_results` PostgreSQL table with a REST re-drive endpoint (`POST /api/dlq/{id}/retry`).
+2. **Asynchronous Non-Blocking Outbox Dispatcher** — Delivers committed outbox events via `CompletableFuture` callbacks without blocking the scheduled outbox thread.
+3. **Domain-Specific Task Handlers** — Modular handlers (`OrderValidationHandler`, `PaymentTaskHandler`, `InventoryTaskHandler`, `ShippingTaskHandler`, `NotificationTaskHandler`) in the worker service.
+4. **Micrometer & Prometheus Metrics** — Exposes custom metrics for workflow latency, step status counts, and outbox queue depth via Spring Boot Actuator (`/actuator/prometheus`).
 
-See [INTERVIEW.md](../INTERVIEW.md) for how to discuss these in interviews.
+## Future Enhancements
+
+1. **Saga compensation** — Automatic rollback steps on failure (e.g. refund payment if shipping fails)
+2. **Branching / parallel steps** — Dynamic DAG-based workflow graphs
+3. **Human approval** — `PAUSED` status with resume API
+4. **OpenTelemetry tracing** — End-to-end distributed tracing across engine and worker nodes
+5. **Schema registry** — Avro/Protobuf schemas for Kafka messages

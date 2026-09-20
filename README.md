@@ -10,7 +10,6 @@ Event-driven workflow orchestration system built with Java, Spring Boot, Postgre
 | [Engine Module](engine/README.md) | Orchestrator, REST API, Kafka integration, scheduler |
 | [Worker Module](worker/README.md) | Task consumer, execution logic, result publishing |
 | [Infrastructure](infra/README.md) | PostgreSQL, Kafka, Docker Compose setup |
-| [Interview Prep](INTERVIEW.md) | Common interview Q&A tied to this codebase |
 | [Live Demo Guide](DEMO.md) | Five-minute dashboard and API walkthrough |
 
 ## Architecture at a Glance
@@ -138,8 +137,7 @@ workflow-engine/
 │   └── README.md
 ├── scripts/
 │   └── demo.sh              # End-to-end demo script
-├── README.md                # This file
-└── INTERVIEW.md             # Interview preparation
+└── README.md                # This file
 ```
 
 ## Design Highlights
