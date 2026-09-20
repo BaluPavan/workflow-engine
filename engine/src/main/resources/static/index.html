@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Workflow Engine</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <header class="header">
+    <div class="header-inner">
+      <div>
+        <h1>Workflow Engine</h1>
+        <p class="subtitle">Event-driven order fulfillment orchestrator</p>
+      </div>
+      <div class="header-status">
+        <span id="health-badge" class="badge badge-neutral">Checking...</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="layout">
+    <aside class="sidebar">
+      <section class="panel">
+        <h2>Setup</h2>
+        <p class="hint">Register the demo workflow once, then start instances.</p>
+        <button id="btn-setup" class="btn btn-secondary">Register demo workflow</button>
+        <p id="setup-status" class="status-msg"></p>
+      </section>
+
+      <section class="panel">
+        <h2>Start instance</h2>
+        <label for="scenario">Scenario</label>
+        <select id="scenario" class="input">
+          <option value="happy">Happy path</option>
+          <option value="skip">Non-critical skip</option>
+          <option value="retry">Retry then succeed</option>
+        </select>
+        <button id="btn-start" class="btn btn-primary">Start workflow</button>
+      </section>
+
+      <section class="panel">
+        <h2>Recent instances</h2>
+        <ul id="instance-list" class="instance-list"></ul>
+      </section>
+    </aside>
+
+    <section class="content">
+      <div id="empty-state" class="empty-state">
+        <h2>Select or start an instance</h2>
+        <p>Watch steps progress in real time as the worker executes via Kafka.</p>
+      </div>
+
+      <div id="detail" class="detail hidden">
+        <div class="detail-header">
+          <div>
+            <h2 id="detail-title">Instance</h2>
+            <p id="detail-meta" class="meta"></p>
+          </div>
+          <span id="detail-status" class="badge"></span>
+        </div>
+
+        <div class="context-box">
+          <h3>Context</h3>
+          <pre id="detail-context"></pre>
+        </div>
+
+        <div class="pipeline-section">
+          <h3>Step pipeline</h3>
+          <div id="pipeline" class="pipeline"></div>
+        </div>
+
+        <div class="steps-table-section">
+          <h3>Step details</h3>
+          <table class="steps-table">
+            <thead>
+              <tr>
+                <th>Step</th>
+                <th>Status</th>
+                <th>Retries</th>
+                <th>Started</th>
+                <th>Completed</th>
+                <th>Failure reason</th>
+              </tr>
+            </thead>
+            <tbody id="steps-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="/js/app.js"></script>
+</body>
+</html>

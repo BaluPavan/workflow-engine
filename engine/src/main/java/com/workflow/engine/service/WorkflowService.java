@@ -7,16 +7,12 @@ import com.workflow.engine.domain.WorkflowStepConfig;
 import com.workflow.engine.repository.WorkflowDefinitionRepository;
 import com.workflow.engine.repository.WorkflowStepConfigRepository;
 import lombok.AllArgsConstructor;
-import org.jspecify.annotations.NonNull;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
+import java.util.HashSet;
 
 @Service
 @AllArgsConstructor
@@ -30,12 +26,18 @@ public class WorkflowService {
         return workflowDefinitionRepository.findByName(name);
     }
 
+    public List<WorkflowDefinition> listWorkflowDefinitions() {
+        return workflowDefinitionRepository.findAll();
+    }
+
     @Transactional
     public WorkflowDefinition registerWorkFlowDefinition(RegisterWorkflowRequest request) {
 
         if(getWorkflowDefinitionByName(request.getName()).isPresent()) {
             throw new IllegalArgumentException("Workflow already exists: " + request.getName());
         }
+
+        validateStepConfiguration(request.getSteps());
 
         WorkflowDefinition workflowDefinition = new WorkflowDefinition();
         workflowDefinition.setName(request.getName());
@@ -52,7 +54,20 @@ public class WorkflowService {
         return workflowDefinition;
     }
 
-    private static @NonNull WorkflowStepConfig getWorkflowStepConfig(StepRequest stepRequest, WorkflowDefinition workflowDefinition) {
+    private static void validateStepConfiguration(List<StepRequest> steps) {
+        HashSet<Integer> orders = new HashSet<>();
+        HashSet<String> names = new HashSet<>();
+        for (StepRequest step : steps) {
+            if (!orders.add(step.getStepOrder())) {
+                throw new IllegalArgumentException("Workflow step orders must be unique");
+            }
+            if (!names.add(step.getStepName())) {
+                throw new IllegalArgumentException("Workflow step names must be unique");
+            }
+        }
+    }
+
+    private static WorkflowStepConfig getWorkflowStepConfig(StepRequest stepRequest, WorkflowDefinition workflowDefinition) {
         WorkflowStepConfig workflowStepConfig = new WorkflowStepConfig();
         workflowStepConfig.setWorkflowDefinition(workflowDefinition);
         workflowStepConfig.setStepName(stepRequest.getStepName());

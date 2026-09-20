@@ -1,7 +1,5 @@
 package com.workflow.engine.repository;
 
-import com.workflow.engine.domain.WorkflowDefinition;
-import com.workflow.engine.domain.WorkflowStatus;
 import com.workflow.engine.domain.WorkflowStepConfig;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -10,5 +8,6 @@ import java.util.UUID;
 
 public interface WorkflowStepConfigRepository extends JpaRepository<WorkflowStepConfig, UUID> {
 
-    List<WorkflowStepConfig> findByWorkflowDefinitionOrderByStepOrderAsc(WorkflowDefinition workflowDefinition);
+    List<WorkflowStepConfig> findByWorkflowDefinitionOrderByStepOrderAsc(
+            com.workflow.engine.domain.WorkflowDefinition workflowDefinition);
 }

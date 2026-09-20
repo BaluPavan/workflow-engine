@@ -17,5 +17,25 @@ build/
 # Logs
 *.log
 
-# Environment variables
+# Local configuration and credentials
 .env
+.env.*
+!.env.example
+application-local.properties
+application-prod.properties
+application-*.local.properties
+*-credentials.json
+secrets/
+
+# Certificates and keystores
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+*.keystore
+
+# Test and tool output
+coverage/
+.scannerwork/
+*.hprof

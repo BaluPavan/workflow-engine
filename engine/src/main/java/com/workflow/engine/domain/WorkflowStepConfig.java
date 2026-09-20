@@ -12,10 +12,10 @@ import java.util.UUID;
 public class WorkflowStepConfig {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @ManyToOne
+    @ManyToOne(optional = false)
     @JoinColumn(name = "workflow_def_id", nullable = false)
     private WorkflowDefinition workflowDefinition;
 
@@ -41,5 +41,4 @@ public class WorkflowStepConfig {
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
     }
-
 }

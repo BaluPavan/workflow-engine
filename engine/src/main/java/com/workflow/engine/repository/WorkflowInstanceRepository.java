@@ -11,8 +11,7 @@ import java.util.UUID;
 
 public interface WorkflowInstanceRepository extends JpaRepository<WorkflowInstance, UUID> {
 
-    public List<WorkflowInstance> findByStatus(WorkflowStatus workflowStatus);
+    List<WorkflowInstance> findByStatus(WorkflowStatus workflowStatus);
 
-
-
+    List<WorkflowInstance> findTop50ByOrderByCreatedAtDesc();
 }

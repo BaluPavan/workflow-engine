@@ -1,6 +1,5 @@
 package com.workflow.engine.domain;
 
-
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -13,16 +12,16 @@ import java.util.UUID;
 public class WorkflowDefinition {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     @Column(nullable = false, unique = true)
-    String name;
+    private String name;
 
-    String description;
+    private String description;
 
-    @Column(name = "created_at", updatable = false)
-    LocalDateTime createdAt;
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt;
 
     @PrePersist
     protected void onCreate() {

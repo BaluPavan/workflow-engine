@@ -1,7 +1,9 @@
 package com.workflow.engine.api.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.Valid;
 import lombok.Data;
 
 import java.util.List;
@@ -15,5 +17,7 @@ public class RegisterWorkflowRequest {
     private String description;
 
     @NotNull
+    @NotEmpty
+    @Valid
     private List<StepRequest> steps;
 }
