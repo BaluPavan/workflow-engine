@@ -1,5 +1,7 @@
 # Five-Minute Demo
 
+![Workflow Engine Live Demo](docs/assets/demo.gif)
+
 This project is designed to be evaluated locally: PostgreSQL and Kafka run in Docker, while the engine dashboard and worker run as two Spring Boot processes.
 
 ## Start the system

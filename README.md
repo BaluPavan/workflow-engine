@@ -2,6 +2,10 @@
 
 Event-driven workflow orchestration system built with Java, Spring Boot, PostgreSQL, and Kafka. The engine owns workflow state and dispatches work to stateless workers; workers execute steps and report results asynchronously.
 
+## Live Demo
+
+![Workflow Engine Live Demo](docs/assets/demo.gif)
+
 ## Documentation
 
 | Document | Description |
@@ -162,7 +166,3 @@ workflow-engine/
 | Messaging | Apache Kafka (Confluent 7.6) |
 | Schema migration | Flyway |
 | Build | Maven |
-
-## License
-
-Personal / portfolio project.
