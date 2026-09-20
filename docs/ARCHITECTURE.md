@@ -29,21 +29,30 @@ The Workflow Engine is an **event-driven orchestrator** for multi-step business 
 This separation allows independent scaling, failure isolation, and swapping worker implementations per step type.
 
 ```mermaid
-C4Context
-    title System Context
+flowchart TB
+    subgraph clients [Clients]
+        user[User]
+    end
 
-    Person(user, "User / Recruiter", "Starts workflows, views dashboard")
-    System(engine, "Workflow Engine", "Orchestrates steps, owns state")
-    System_Ext(worker, "Worker Service", "Executes individual steps")
-    SystemDb(db, "PostgreSQL", "Workflow state")
-    System_Ext(kafka, "Kafka", "Async task transport")
+    subgraph engine_sys [Workflow Engine System]
+        engine[Engine Service]
+        db[(PostgreSQL DB)]
+    end
 
-    user --> engine : REST / Dashboard
-    engine --> db : Read/write state
-    engine --> kafka : Publish tasks
-    kafka --> worker : Deliver tasks
-    worker --> kafka : Publish results
-    kafka --> engine : Deliver results
+    subgraph messaging [Async Transport]
+        kafka[Kafka Brokers]
+    end
+
+    subgraph workers [Executors]
+        worker[Worker Service]
+    end
+
+    user -->|REST / Dashboard| engine
+    engine -->|Read / Write State| db
+    engine -->|Publish Tasks| kafka
+    kafka -->|Deliver Tasks| worker
+    worker -->|Publish Results| kafka
+    kafka -->|Deliver Results| engine
 ```
 
 ---

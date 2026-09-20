@@ -92,7 +92,7 @@ chmod +x scripts/demo.sh
 ./scripts/demo.sh
 ```
 
-For a recruiter-friendly walkthrough of the dashboard, failure handling, and retry flow, see [DEMO.md](DEMO.md).
+For a detailed walkthrough of the dashboard, failure handling, and retry flow, see [DEMO.md](DEMO.md).
 
 ## Configuration and Secrets
 
